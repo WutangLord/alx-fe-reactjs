@@ -1,33 +1,27 @@
- // AddRecipeForm component
- import { useState } from 'react';
- import { useRecipeStore } from './recipeStore';
+// src/components/RecipeDetails.jsx
+import { useParams } from 'react-router-dom';
+import useRecipeStore from '../recipeStore';
+import EditRecipeForm from './EditRecipeForm';
+import DeleteRecipeButton from './DeleteRecipeButton';
 
- const AddRecipeForm = () => {
-   const addRecipe = useRecipeStore(state => state.addRecipe);
-   const [title, setTitle] = useState('');
-   const [description, setDescription] = useState('');
+const RecipeDetails = () => {
+  const { recipeId } = useParams();
+  const recipe = useRecipeStore((state) =>
+    state.recipes.find((recipe) => recipe.id === parseInt(recipeId))
+  );
 
-   const handleSubmit = (event) => {
-     event.preventDefault();
-     addRecipe({ id: Date.now(), title, description });
-     setTitle('');
-     setDescription('');
-   };
+  if (!recipe) {
+    return <div>Recipe not found!</div>;
+  }
 
-   return (
-     <form onSubmit={handleSubmit}>
-       <input
-         type="text"
-         value={title}
-         onChange={(e) => setTitle(e.target.value)}
-         placeholder="Title"
-       />
-       <textarea
-         value={description}
-         onChange={(e) => setDescription(e.target.value)}
-         placeholder="Description"
-       />
-       <button type="submit">Add Recipe</button>
-     </form>
-   );
- };
+  return (
+    <div>
+      <h1>{recipe.title}</h1>
+      <p>{recipe.description}</p>
+      <EditRecipeForm recipe={recipe} />
+      <DeleteRecipeButton recipeId={recipe.id} />
+    </div>
+  );
+};
+
+export default RecipeDetails;
